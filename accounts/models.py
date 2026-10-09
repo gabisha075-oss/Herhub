@@ -1,3 +1,30 @@
+from django.contrib.auth.models import AbstractUser, UserManager as DjangoUserManager
+from django.core.validators import RegexValidator
 from django.db import models
 
-# Create your models here.
+
+class UserManager(DjangoUserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("role", "admin")
+        return super().create_superuser(username, email, password, **extra_fields)
+
+
+class User(AbstractUser):
+    class Role(models.TextChoices):
+        CUSTOMER = "customer", "Customer"
+        PROVIDER = "provider", "Provider"
+        ADMIN = "admin", "Admin"
+
+    phone = models.CharField(
+        max_length=10,
+        unique=True,
+        validators=[RegexValidator(r"^[6-9]\d{9}$", "Enter a valid 10-digit mobile number.")],
+    )
+    role = models.CharField(max_length=10, choices=Role.choices, default=Role.CUSTOMER)
+
+    REQUIRED_FIELDS = ["phone", "first_name"]
+
+    objects = UserManager()
+
+    def __str__(self):
+        return f"{self.username} ({self.role})"
