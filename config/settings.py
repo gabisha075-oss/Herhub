@@ -142,3 +142,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "home"
+from django.contrib.messages import constants as message_constants
+
+MESSAGE_TAGS = {message_constants.ERROR: "danger"}

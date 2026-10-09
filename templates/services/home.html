@@ -1,10 +1,65 @@
 {% extends "base.html" %}
+{% block title %}HerHub · Beauty and craft, closer to home{% endblock %}
 {% block content %}
-<div class="text-center py-5">
-  <h1 class="fw-bold text-brand">Beauty and craft, <span class="text-gold">closer to home.</span></h1>
-  <p class="text-muted">Discover trusted women service providers across Nagercoil.</p>
-  {% if not user.is_authenticated %}
-    <a href="{% url 'signup' %}" class="btn btn-brand px-4">Get started</a>
-  {% endif %}
-</div>
+
+<section class="hero text-center">
+  <p class="eyebrow">Made for women, by women</p>
+  <h1 class="fw-bold display-5 text-brand">Beauty and craft, <span class="text-gold">closer to home.</span></h1>
+  <p class="text-muted">Discover trusted women service providers across Nagercoil for every occasion.</p>
+
+  <form action="{% url 'provider_list' %}" method="get" class="search-bar mx-auto">
+    <input type="text" name="q" class="form-control border-0" placeholder="What are you looking for? e.g. Bridal makeup">
+    <select name="area" class="form-select border-0">
+      <option value="">All areas</option>
+      {% for a in areas %}<option value="{{ a.pk }}">{{ a.name }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="btn btn-brand px-4">Search</button>
+  </form>
+</section>
+
+<section class="mt-5">
+  <h3 class="fw-bold mb-3">What do you need?</h3>
+  <div class="row g-3">
+    {% for c in categories %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'provider_list' %}?category={{ c.slug }}" class="text-decoration-none">
+          <div class="card card-soft text-center p-3 h-100 category-tile">
+            <span class="fw-semibold text-dark">{{ c.name }}</span>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <p class="text-muted">No categories yet. Add some from the admin panel.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mt-5">
+  <div class="d-flex justify-content-between align-items-end mb-3">
+    <div><h3 class="fw-bold mb-0">Featured providers</h3><p class="text-muted mb-0">Loved by women near you</p></div>
+    <a href="{% url 'provider_list' %}" class="text-brand fw-semibold">View all ›</a>
+  </div>
+  <div class="row g-4">
+    {% for provider in featured %}
+      <div class="col-md-6 col-lg-4">{% include "partials/provider_card.html" %}</div>
+    {% empty %}
+      <p class="text-muted">No providers yet. Check back soon!</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if bridal %}
+<section class="bridal-band mt-5">
+  <p class="eyebrow text-gold">For your big day</p>
+  <h2 class="fw-bold text-white">Meet Nagercoil's bridal specialists</h2>
+  <p class="text-white-50">From your trial look to the final touch, find artists who make your day beautifully yours.</p>
+  <a href="{% url 'provider_list' %}?bridal=1" class="btn btn-light fw-semibold">Explore bridal artists ›</a>
+</section>
+{% endif %}
+
+<section class="row text-center mt-5 g-3">
+  <div class="col-md-4"><strong>Verified profiles</strong><div class="small text-muted">Carefully reviewed providers</div></div>
+  <div class="col-md-4"><strong>Women-led services</strong><div class="small text-muted">Supporting local talent</div></div>
+  <div class="col-md-4"><strong>Book directly</strong><div class="small text-muted">Simple, personal connection</div></div>
+</section>
 {% endblock %}

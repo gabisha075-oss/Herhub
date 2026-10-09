@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Find services · HerHub{% endblock %}
+{% block content %}
+
+<form method="get" class="card card-soft p-3 mb-4">
+  <div class="row g-2 align-items-end">
+    <div class="col-lg-4">
+      <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search e.g. bridal makeup, blouse">
+    </div>
+    <div class="col-6 col-lg-2">
+      <select name="category" class="form-select" onchange="this.form.submit()">
+        <option value="">All services</option>
+        {% for c in categories %}
+          <option value="{{ c.slug }}" {% if c.slug == selected_category %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <select name="area" class="form-select" onchange="this.form.submit()">
+        <option value="">All areas</option>
+        {% for a in areas %}
+          <option value="{{ a.pk }}" {% if a.pk|stringformat:"s" == selected_area %}selected{% endif %}>{{ a.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <select name="max_price" class="form-select" onchange="this.form.submit()">
+        <option value="">Any budget</option>
+
+        <option value="1000" {% if max_price == "1000" %}selected{% endif %}>Under ₹1,000</option>
+        <option value="3000" {% if max_price == "3000" %}selected{% endif %}>Under ₹3,000</option>
+        <option value="5000" {% if max_price == "5000" %}selected{% endif %}>Under ₹5,000</option>
+        <option value="10000" {% if max_price == "10000" %}selected{% endif %}>Under ₹10,000</option>
+      </select>
+    </div>
+    <div class="col-6 col-lg-2">
+      <select name="sort" class="form-select" onchange="this.form.submit()">
+        <option value="recommended" {% if sort == "recommended" %}selected{% endif %}>Recommended</option>
+        <option value="rating" {% if sort == "rating" %}selected{% endif %}>Top rated</option>
+        <option value="price" {% if sort == "price" %}selected{% endif %}>Price: low to high</option>
+      </select>
+    </div>
+  </div>
+  <div class="d-flex gap-4 mt-3 align-items-center">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="home" value="1" id="home" {% if home_service %}checked{% endif %} onchange="this.form.submit()">
+      <label class="form-check-label" for="home">Home service</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="bridal" value="1" id="bridal" {% if bridal %}checked{% endif %} onchange="this.form.submit()">
+      <label class="form-check-label" for="bridal">Bridal specialist</label>
+    </div>
+    <button type="submit" class="btn btn-brand btn-sm ms-auto">Search</button>
+    <a href="{% url 'provider_list' %}" class="small text-muted">Clear</a>
+  </div>
+</form>
+
+<p class="text-muted">{{ page_obj.paginator.count }} provider{{ page_obj.paginator.count|pluralize }} found</p>
+
+<div class="row g-4">
+  {% for provider in page_obj %}
+    <div class="col-md-6 col-lg-4">{% include "partials/provider_card.html" %}</div>
+  {% empty %}
+    <div class="text-center py-5">
+      <h5>No providers found</h5>
+      <p class="text-muted">Try removing a filter or searching something else.</p>
+    </div>
+  {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?{{ querystring }}&page={{ page_obj.previous_page_number }}">Previous</a></li>
+    {% endif %}
+    <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?{{ querystring }}&page={{ page_obj.next_page_number }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

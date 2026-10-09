@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}My bookings · HerHub{% endblock %}
+{% block content %}
+<h2 class="fw-bold">My bookings</h2>
+
+<ul class="nav nav-pills my-3 gap-1">
+  <li class="nav-item"><a class="nav-link tab-link {% if not status %}active{% endif %}" href="{% url 'my_bookings' %}">All</a></li>
+  {% for value, label in tabs %}
+    <li class="nav-item"><a class="nav-link tab-link {% if status == value %}active{% endif %}" href="?status={{ value }}">{{ label }}</a></li>
+  {% endfor %}
+</ul>
+
+{% for b in bookings %}
+  <div class="card card-soft p-3 mb-3">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <a href="{% url 'provider_detail' b.provider.pk %}" class="fw-bold text-decoration-none text-brand">{{ b.provider.business_name }}</a>
+        <div class="text-muted small">{{ b.service.name }} · ₹{{ b.service.price|floatformat:0 }}</div>
+      </div>
+      <span class="badge status-{{ b.status }}">{{ b.get_status_display }}</span>
+    </div>
+    <div class="row small mt-3 g-2">
+      <div class="col-6 col-md-4"><span class="text-muted">Date</span><br>{{ b.date|date:"d M Y" }}</div>
+      <div class="col-6 col-md-4"><span class="text-muted">Time</span><br>{{ b.time|time:"g:i A" }}</div>
+      <div class="col-12 col-md-4"><span class="text-muted">Where</span><br>{{ b.get_venue_display }}</div>
+    </div>
+
+    {% if b.status == 'pending' or b.status == 'accepted' %}
+      <form method="post" action="{% url 'cancel_booking' b.pk %}" class="mt-3"
+            onsubmit="return confirm('Cancel this booking?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-brand">Cancel booking</button>
+      </form>
+    {% elif b.status == 'completed' %}
+      {% if b.review %}
+        <div class="mt-3 small"><span class="text-gold">{{ b.review.rating }} ★</span> You reviewed this booking.</div>
+      {% else %}
+        <form method="post" action="{% url 'review_booking' b.pk %}" class="mt-3">
+          {% csrf_token %}
+          <div class="row g-2">
+            <div class="col-md-3">
+              <select name="rating" class="form-select form-select-sm" required>
+                <option value="">Rating</option>
+                <option value="5">5 ★ Excellent</option>
+                <option value="4">4 ★ Good</option>
+                <option value="3">3 ★ Okay</option>
+                <option value="2">2 ★ Poor</option>
+                <option value="1">1 ★ Bad</option>
+              </select>
+            </div>
+            <div class="col-md-7">
+              <input type="text" name="comment" class="form-control form-control-sm" placeholder="Share your experience (optional)">
+            </div>
+            <div class="col-md-2"><button type="submit" class="btn btn-sm btn-brand w-100">Review</button></div>
+          </div>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+{% empty %}
+  <div class="text-center py-5">
+    <h5>No bookings here yet</h5>
+    <p class="text-muted">Find a provider and send your first booking request.</p>
+    <a href="{% url 'provider_list' %}" class="btn btn-brand">Find services</a>
+  </div>
+{% endfor %}
+{% endblock %}

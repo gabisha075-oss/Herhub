@@ -16,13 +16,18 @@
       <div class="ms-auto d-flex align-items-center gap-2">
         {% if user.is_authenticated %}
           {% if user.role == 'provider' %}
+            <a class="nav-link text-muted me-2" href="{% url 'provider_list' %}">Find services</a>
             <a class="btn btn-sm btn-outline-brand" href="{% url 'provider_dashboard' %}">Dashboard</a>
           {% endif %}
+    
           <span class="small text-muted d-none d-md-inline">Hi, {{ user.first_name }}</span>
           <form method="post" action="{% url 'logout' %}" class="d-inline">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-brand">Logout</button>
           </form>
+          {% if user.role == 'customer' %}
+            <a class="btn btn-sm btn-outline-brand" href="{% url 'my_bookings' %}">My Bookings</a>
+         {% endif %}
         {% else %}
           <a class="btn btn-sm btn-outline-brand" href="{% url 'login' %}">Login</a>
           <a class="btn btn-sm btn-brand" href="{% url 'signup' %}">Sign up</a>

@@ -14,7 +14,7 @@ class BootstrapMixin:
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             widget = field.widget
-            if isinstance(widget, forms.CheckboxSelectMultiple):
+            if isinstance(widget, (forms.CheckboxSelectMultiple, forms.RadioSelect)):
                 continue
             css = "form-select" if isinstance(widget, forms.Select) else "form-control"
             widget.attrs["class"] = css

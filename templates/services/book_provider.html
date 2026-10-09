@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Book {{ provider.business_name }} · HerHub{% endblock %}
+{% block content %}
+<div class="mx-auto" style="max-width: 600px;">
+  <a href="{% url 'provider_detail' provider.pk %}" class="text-muted small">‹ Back to profile</a>
+
+  <div class="card card-soft p-3 my-3 d-flex flex-row align-items-center gap-3">
+    {% if provider.profile_photo %}
+      <img src="{{ provider.profile_photo.url }}" class="avatar-sm" alt="">
+    {% else %}
+      <div class="avatar-sm placeholder-photo">{{ provider.business_name|slice:":1" }}</div>
+    {% endif %}
+    <div>
+      <div class="small text-muted text-uppercase">Booking with</div>
+      <strong>{{ provider.business_name }}</strong>
+    </div>
+  </div>
+
+  <div class="card card-soft p-4">
+    <h3 class="mb-1">Tell us what you need</h3>
+    <p class="text-muted">{{ provider.business_name }} will review your request and confirm availability.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "partials/form_fields.html" %}
+      <button type="submit" class="btn btn-brand w-100 py-2">Send booking request</button>
+      <p class="text-center small text-muted mt-2 mb-0">No payment needed now. The provider will contact you to confirm.</p>
+    </form>
+  </div>
+</div>
+{% endblock %}

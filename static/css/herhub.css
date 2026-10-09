@@ -24,3 +24,39 @@ h1, h2, h3, h4, h5, .navbar-brand { font-family: "Poppins", sans-serif; }
   border-color: var(--maroon);
   box-shadow: 0 0 0 0.2rem rgba(122, 31, 61, 0.15);
 }
+.hero { padding: 3rem 1rem; background: linear-gradient(135deg, var(--rose), #fdf1ea); border-radius: 24px; }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; font-weight: 600; color: var(--maroon); }
+
+.search-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; background: #fff; border-radius: 16px; padding: 0.5rem; max-width: 760px; box-shadow: 0 6px 24px rgba(122, 31, 61, 0.1); }
+.search-bar .form-control, .search-bar .form-select { flex: 1 1 200px; }
+
+.category-tile { transition: transform .15s; }
+.category-tile:hover { transform: translateY(-3px); }
+
+.provider-card { overflow: hidden; transition: transform .15s; }
+.provider-card:hover { transform: translateY(-3px); }
+.provider-photo { width: 100%; height: 200px; object-fit: cover; }
+.placeholder-photo { display: flex; align-items: center; justify-content: center; background: var(--rose); color: var(--maroon); font-family: "Poppins", sans-serif; font-weight: 700; font-size: 2.5rem; }
+.badge-soft { background: var(--rose); color: var(--maroon); font-weight: 500; border-radius: 8px; }
+
+.bridal-band { background: var(--maroon); border-radius: 24px; padding: 3rem 2rem; }
+
+.detail-wrap { max-width: 760px; padding-bottom: 6rem; }
+.avatar-lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex-shrink: 0; font-size: 2rem; }
+.portfolio-img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; }
+.rating-box { background: var(--rose); border-radius: 12px; padding: 1rem; }
+
+.action-bar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.95); border-top: 1px solid #eee; }
+.action-bar .btn { min-width: 160px; border-radius: 10px; font-weight: 600; }
+.btn-whatsapp { background: #1e7b5a; color: #fff; }
+
+.avatar-sm { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; font-size: 1.2rem; }
+
+.tab-link { color: var(--maroon); border: 1px solid #eadbe0; border-radius: 999px; padding: 0.3rem 0.9rem; font-size: 0.9rem; }
+.nav-pills .nav-link.tab-link.active { background: var(--maroon); color: #fff; border-color: var(--maroon); }
+
+.status-pending   { background: #fff3cd; color: #8a6d00; }
+.status-accepted  { background: #d1ecf1; color: #0c5460; }
+.status-completed { background: #d4edda; color: #1e6b3a; }
+.status-rejected  { background: #f8d7da; color: #842029; }
+.status-cancelled { background: #e9ecef; color: #495057; }

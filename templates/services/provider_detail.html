@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{ provider.business_name }} · HerHub{% endblock %}
+{% block content %}
+
+{% if not provider.is_approved %}
+  <div class="alert alert-warning">Preview: your profile isn't live yet. Customers can't see this page until it's approved.</div>
+{% endif %}
+
+<div class="detail-wrap mx-auto">
+  <div class="d-flex gap-3 align-items-center">
+    {% if provider.profile_photo %}
+      <img src="{{ provider.profile_photo.url }}" class="avatar-lg" alt="">
+    {% else %}
+      <div class="avatar-lg placeholder-photo">{{ provider.business_name|slice:":1" }}</div>
+    {% endif %}
+    <div>
+      <h2 class="fw-bold mb-1">{{ provider.business_name }}</h2>
+      <div class="text-muted">{{ provider.categories.all|join:", " }}{% if provider.area %} · {{ provider.area.name }}{% endif %}</div>
+      <div class="small mt-1">
+        {% if provider.review_count %}
+          <span class="text-gold">★</span> <strong>{{ provider.avg_rating|floatformat:1 }}</strong> ({{ provider.review_count }} review{{ provider.review_count|pluralize }})
+        {% else %}<span class="badge text-bg-light">New</span>{% endif %}
+        {% if provider.years_experience %}<span class="text-muted"> · {{ provider.years_experience }} yrs experience</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <h4>About</h4>
+  <p class="text-muted">{{ provider.about|default:"This provider hasn't added a description yet." }}</p>
+  <div>
+    {% if provider.home_service %}<span class="badge badge-soft">Home service</span>{% endif %}
+    {% if provider.bridal_specialist %}<span class="badge badge-soft">Bridal specialist</span>{% endif %}
+    <span class="badge badge-soft">Women only</span>
+  </div>
+
+  {% if provider.images.all %}
+  <hr>
+  <h4>Portfolio</h4>
+  <div class="row g-2">
+    {% for img in provider.images.all %}
+      <div class="col-6 col-md-4"><img src="{{ img.image.url }}" class="portfolio-img" alt="{{ img.caption }}"></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <hr>
+  <h4>Services &amp; prices</h4>
+  {% for s in provider.services.all %}
+    <div class="d-flex justify-content-between py-2 border-bottom">
+      <div>
+        <div class="fw-semibold">{{ s.name }}</div>
+        {% if s.description %}<div class="small text-muted">{{ s.description }}</div>{% endif %}
+      </div>
+      <div class="fw-semibold text-brand">₹{{ s.price|floatformat:0 }}</div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No services listed yet.</p>
+  {% endfor %}
+
+  <hr>
+  <h4>Reviews</h4>
+  {% if provider.review_count %}
+    <div class="rating-box mb-3">
+      <span class="display-6 fw-bold text-brand">{{ provider.avg_rating|floatformat:1 }}</span>
+      <span class="text-gold">★</span>
+      <span class="small text-muted ms-2">Based on {{ provider.review_count }} review{{ provider.review_count|pluralize }}</span>
+    </div>
+    {% for r in reviews %}
+      <div class="py-2 border-bottom">
+        <div class="d-flex justify-content-between">
+          <strong>{{ r.booking.customer.first_name }}</strong>
+          <span class="text-gold">{{ r.rating }} ★</span>
+        </div>
+        {% if r.comment %}<p class="text-muted mb-1">{{ r.comment }}</p>{% endif %}
+        <div class="small text-muted">{{ r.created_at|timesince }} ago</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No reviews yet.</p>
+  {% endif %}
+</div>
+
+{% if not is_owner %}
+<div class="action-bar">
+  <a class="btn btn-whatsapp" target="_blank" rel="noopener"
+     href="https://wa.me/91{{ provider.whatsapp_number }}?text={{ wa_text }}">WhatsApp</a>
+  <a class="btn btn-brand" href="{% url 'book_provider' provider.pk %}">Book appointment</a>
+</div>
+{% endif %}
+{% endblock %}
