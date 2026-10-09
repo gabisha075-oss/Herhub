@@ -1,0 +1,26 @@
+:root {
+  --maroon: #7A1F3D;
+  --rose: #F8E1E7;
+  --gold: #C9A227;
+  --cream: #FFFBF7;
+}
+
+body { background: var(--cream); font-family: "Inter", sans-serif; }
+h1, h2, h3, h4, h5, .navbar-brand { font-family: "Poppins", sans-serif; }
+
+.navbar-brand { color: var(--maroon) !important; font-weight: 700; }
+.text-brand { color: var(--maroon); }
+.text-gold { color: var(--gold); }
+
+.btn-brand { background: var(--maroon); color: #fff; border: 0; border-radius: 10px; }
+.btn-brand:hover { background: #5f1830; color: #fff; }
+.btn-outline-brand { border: 1px solid var(--maroon); color: var(--maroon); border-radius: 10px; }
+.btn-outline-brand:hover { background: var(--maroon); color: #fff; }
+
+.card-soft { border: 0; border-radius: 16px; box-shadow: 0 6px 24px rgba(122, 31, 61, 0.08); }
+
+.form-control, .form-select { border-radius: 10px; padding: 0.65rem 0.9rem; }
+.form-control:focus, .form-select:focus {
+  border-color: var(--maroon);
+  box-shadow: 0 0 0 0.2rem rgba(122, 31, 61, 0.15);
+}

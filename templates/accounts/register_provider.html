@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Provider sign up · HerHub{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card card-soft p-4">
+      <h3 class="mb-1">Join as a provider</h3>
+      <p class="text-muted">Create your profile and start receiving enquiries.</p>
+      <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {% include "partials/form_fields.html" %}
+        <p class="small text-muted">Your profile will be reviewed before going live.</p>
+        <button type="submit" class="btn btn-brand w-100 py-2">Create my profile</button>
+      </form>
+      <p class="text-center small mt-3 mb-0">Already registered? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

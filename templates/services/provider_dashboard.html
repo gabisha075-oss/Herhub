@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · HerHub{% endblock %}
+{% block content %}
+<h2 class="fw-bold">Dashboard</h2>
+{% if provider %}
+  <div class="card card-soft p-4 mt-3">
+    <h5>{{ provider.business_name }}</h5>
+    {% if provider.is_approved %}
+      <span class="badge text-bg-success">Live</span>
+      <p class="text-muted mt-2 mb-0">Your profile is visible to customers.</p>
+    {% else %}
+      <span class="badge text-bg-warning">Pending review</span>
+      <p class="text-muted mt-2 mb-0">We'll make your profile live after review.</p>
+    {% endif %}
+  </div>
+{% else %}
+  <p class="text-muted">No provider profile found for this account.</p>
+{% endif %}
+{% endblock %}
