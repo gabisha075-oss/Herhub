@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}My profile · HerHub{% endblock %}
+{% block content %}
+{% include "partials/provider_nav.html" %}
+<div class="mx-auto" style="max-width: 640px;">
+  <div class="card card-soft p-4">
+    <h3 class="mb-1">My profile</h3>
+    <p class="text-muted">This is what customers see on your public page.</p>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% include "partials/form_fields.html" %}
+      <button type="submit" class="btn btn-brand px-4">Save changes</button>
+      <a href="{% url 'provider_detail' provider.pk %}" class="btn btn-outline-brand ms-2">View public page</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

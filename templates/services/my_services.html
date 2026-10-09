@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}My services · HerHub{% endblock %}
+{% block content %}
+{% include "partials/provider_nav.html" %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="fw-bold mb-0">My services</h2>
+    <p class="text-muted small mb-0">Customers can book only the services listed here.</p>
+  </div>
+  <a href="{% url 'service_add' %}" class="btn btn-brand">Add service</a>
+</div>
+
+{% for s in services %}
+  <div class="card card-soft p-3 mb-3">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+      <div>
+        <div class="fw-bold">{{ s.name }}</div>
+        <div class="small text-muted">{{ s.category.name }}{% if s.description %} · {{ s.description }}{% endif %}</div>
+      </div>
+      <div class="fw-semibold text-brand fs-5">₹{{ s.price|floatformat:0 }}</div>
+    </div>
+    <div class="d-flex gap-2 mt-3">
+      <a href="{% url 'service_edit' s.pk %}" class="btn btn-sm btn-outline-brand">Edit</a>
+      <form method="post" action="{% url 'service_delete' s.pk %}"
+            onsubmit="return confirm('Delete this service?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+      </form>
+    </div>
+  </div>
+{% empty %}
+  <div class="text-center py-5">
+    <h5>No services yet</h5>
+    <p class="text-muted">Add your first service so customers can book you.</p>
+    <a href="{% url 'service_add' %}" class="btn btn-brand">Add service</a>
+  </div>
+{% endfor %}
+{% endblock %}

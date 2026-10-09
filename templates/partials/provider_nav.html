@@ -1,0 +1,6 @@
+<ul class="nav nav-pills mb-4 gap-1">
+  <li class="nav-item"><a class="nav-link tab-link {% if request.resolver_match.url_name == 'provider_dashboard' %}active{% endif %}" href="{% url 'provider_dashboard' %}">Bookings</a></li>
+  <li class="nav-item"><a class="nav-link tab-link {% if request.resolver_match.url_name == 'my_services' or request.resolver_match.url_name == 'service_add' or request.resolver_match.url_name == 'service_edit' %}active{% endif %}" href="{% url 'my_services' %}">My services</a></li>
+  <li class="nav-item"><a class="nav-link tab-link {% if request.resolver_match.url_name == 'my_portfolio' %}active{% endif %}" href="{% url 'my_portfolio' %}">Portfolio</a></li>
+  <li class="nav-item"><a class="nav-link tab-link {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}" href="{% url 'edit_profile' %}">My profile</a></li>
+</ul>

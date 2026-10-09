@@ -1,9 +1,10 @@
+import re
 from django import forms
 from django.utils import timezone
 
 from accounts.forms import BootstrapMixin
 
-from .models import Booking, Review
+from .models import Booking, Review, PortfolioImage, Provider, Service
 
 
 class BookingForm(BootstrapMixin, forms.ModelForm):
@@ -52,3 +53,85 @@ class ReviewForm(BootstrapMixin, forms.ModelForm):
     class Meta:
         model = Review
         fields = ["rating", "comment"]
+
+MAX_IMAGE_MB = 5
+
+
+def validate_image_size(file):
+    if file.size > MAX_IMAGE_MB * 1024 * 1024:
+        raise forms.ValidationError(f"Image must be smaller than {MAX_IMAGE_MB} MB.")
+
+
+class ServiceForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ["category", "name", "description", "price"]
+        labels = {
+            "category": "Category",
+            "name": "Service name",
+            "description": "Short description",
+            "price": "Starting price (₹)",
+        }
+        widgets = {
+            "name": forms.TextInput(attrs={"placeholder": "e.g. Bridal Makeup"}),
+            "description": forms.TextInput(attrs={"placeholder": "e.g. Makeup, hair & saree draping"}),
+        }
+
+    def __init__(self, *args, provider, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["category"].queryset = provider.categories.all()
+        self.fields["category"].empty_label = "Select category"
+
+    def clean_price(self):
+        price = self.cleaned_data["price"]
+        if price <= 0:
+            raise forms.ValidationError("Price must be more than 0.")
+        return price
+
+
+class PortfolioImageForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        model = PortfolioImage
+        fields = ["image", "caption"]
+        labels = {"image": "Choose a photo", "caption": "Caption (optional)"}
+
+    def clean_image(self):
+        image = self.cleaned_data["image"]
+        validate_image_size(image)
+        return image
+
+
+class ProviderProfileForm(BootstrapMixin, forms.ModelForm):
+    class Meta:
+        model = Provider
+        fields = [
+            "business_name", "categories", "area", "about", "years_experience",
+            "whatsapp", "home_service", "bridal_specialist", "profile_photo",
+        ]
+        labels = {
+            "business_name": "Business name",
+            "categories": "Your services",
+            "about": "About your work",
+            "years_experience": "Years of experience",
+            "whatsapp": "WhatsApp number (optional)",
+            "home_service": "I offer home service",
+            "bridal_specialist": "I'm a bridal specialist",
+            "profile_photo": "Profile photo",
+        }
+        help_texts = {"whatsapp": "10 digits. Leave empty to use your login mobile number."}
+        widgets = {
+            "categories": forms.CheckboxSelectMultiple,
+            "about": forms.Textarea(attrs={"rows": 4}),
+        }
+
+    def clean_whatsapp(self):
+        number = self.cleaned_data["whatsapp"].strip()
+        if number and not re.fullmatch(r"[6-9]\d{9}", number):
+            raise forms.ValidationError("Enter a valid 10-digit mobile number.")
+        return number
+
+    def clean_profile_photo(self):
+        photo = self.cleaned_data.get("profile_photo")
+        if photo and hasattr(photo, "content_type"):   # puthusa upload panna mattum
+            validate_image_size(photo)
+        return photo

@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count, F, Min, Q
+from django.db.models import Avg, Count, F, Min, Q, ProtectedError
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from urllib.parse import quote
@@ -8,8 +8,8 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from accounts.decorators import role_required
-from .forms import BookingForm, ReviewForm
-from .models import Area, Booking, Category, Provider, Review
+from .forms import BookingForm, ReviewForm, PortfolioImageForm, ProviderProfileForm, ServiceForm
+from .models import Area, Booking, Category, Provider, Review, PortfolioImage, Service
 
 
 def add_stats(queryset):
@@ -243,3 +243,96 @@ def booking_action(request, pk, action):
         booking.save(update_fields=["status"])
         messages.success(request, f"Booking marked as {booking.get_status_display().lower()}.")
     return redirect("provider_dashboard")
+# ---------------- Provider: self-service ----------------
+MAX_PORTFOLIO = 12
+
+
+@role_required("provider")
+def my_services(request):
+    provider = get_object_or_404(Provider, user=request.user)
+    return render(request, "services/my_services.html", {
+        "provider": provider,
+        "services": provider.services.select_related("category"),
+    })
+
+
+@role_required("provider")
+def service_form(request, pk=None):
+    provider = get_object_or_404(Provider, user=request.user)
+    if pk:
+        service = get_object_or_404(Service, pk=pk, provider=provider)   # thanoda service mattum
+    else:
+        service = Service(provider=provider)
+
+    if request.method == "POST":
+        form = ServiceForm(request.POST, instance=service, provider=provider)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Service saved.")
+            return redirect("my_services")
+    else:
+        form = ServiceForm(instance=service, provider=provider)
+
+    return render(request, "services/service_form.html", {"form": form, "editing": bool(pk)})
+
+
+@role_required("provider")
+@require_POST
+def delete_service(request, pk):
+    provider = get_object_or_404(Provider, user=request.user)
+    service = get_object_or_404(Service, pk=pk, provider=provider)
+    try:
+        service.delete()
+        messages.success(request, "Service deleted.")
+    except ProtectedError:
+        messages.error(request, "This service has bookings, so it can't be deleted.")
+    return redirect("my_services")
+
+
+@role_required("provider")
+def my_portfolio(request):
+    provider = get_object_or_404(Provider, user=request.user)
+    images = provider.images.all()
+
+    if request.method == "POST":
+        if images.count() >= MAX_PORTFOLIO:
+            messages.error(request, f"You can upload up to {MAX_PORTFOLIO} photos.")
+            return redirect("my_portfolio")
+        form = PortfolioImageForm(
+            request.POST, request.FILES, instance=PortfolioImage(provider=provider)
+        )
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Photo added.")
+            return redirect("my_portfolio")
+    else:
+        form = PortfolioImageForm()
+
+    return render(request, "services/my_portfolio.html", {
+        "provider": provider, "images": images, "form": form, "max_photos": MAX_PORTFOLIO,
+    })
+
+
+@role_required("provider")
+@require_POST
+def delete_image(request, pk):
+    provider = get_object_or_404(Provider, user=request.user)
+    image = get_object_or_404(PortfolioImage, pk=pk, provider=provider)
+    image.image.delete(save=False)     # disk-la irundhum file-a delete pannum
+    image.delete()
+    messages.success(request, "Photo removed.")
+    return redirect("my_portfolio")
+
+
+@role_required("provider")
+def edit_profile(request):
+    provider = get_object_or_404(Provider, user=request.user)
+    if request.method == "POST":
+        form = ProviderProfileForm(request.POST, request.FILES, instance=provider)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated.")
+            return redirect("edit_profile")
+    else:
+        form = ProviderProfileForm(instance=provider)
+    return render(request, "services/edit_profile.html", {"form": form, "provider": provider})

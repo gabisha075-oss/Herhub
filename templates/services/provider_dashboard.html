@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Dashboard · HerHub{% endblock %}
 {% block content %}
+{% include "partials/provider_nav.html" %}
 {% if not provider %}
   <p class="text-muted">No provider profile found for this account.</p>
 {% else %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Portfolio · HerHub{% endblock %}
+{% block content %}
+{% include "partials/provider_nav.html" %}
+
+<h2 class="fw-bold">Portfolio</h2>
+<p class="text-muted">Show your best work. {{ images|length }} / {{ max_photos }} photos used. JPG or PNG, up to 5 MB each.</p>
+
+<div class="card card-soft p-3 mb-4">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="row g-2 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label fw-semibold">{{ form.image.label }}</label>
+        {{ form.image }}
+        {% for e in form.image.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-5">
+        <label class="form-label fw-semibold">{{ form.caption.label }}</label>
+        {{ form.caption }}
+      </div>
+      <div class="col-md-2"><button type="submit" class="btn btn-brand w-100">Upload</button></div>
+    </div>
+  </form>
+</div>
+
+<div class="row g-3">
+  {% for img in images %}
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="card card-soft overflow-hidden">
+        <img src="{{ img.image.url }}" class="portfolio-img" style="border-radius: 0;" alt="{{ img.caption }}">
+        <div class="p-2">
+          {% if img.caption %}<div class="small text-muted mb-1">{{ img.caption }}</div>{% endif %}
+          <form method="post" action="{% url 'image_delete' img.pk %}" onsubmit="return confirm('Remove this photo?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger w-100">Remove</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No photos yet. Upload your first one above.</p>
+  {% endfor %}
+</div>
+{% endblock %}
