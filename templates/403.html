@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}No access · HerHub{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <div class="display-1 fw-bold text-brand">403</div>
+  <h3 class="fw-bold">This page isn't available for your account</h3>
+  <p class="text-muted">Customers and providers have different pages. You may be logged in with the other account type.</p>
+  <a href="{% url 'home' %}" class="btn btn-brand px-4">Go home</a>
+</div>
+{% endblock %}
