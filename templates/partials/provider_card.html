@@ -1,26 +1,29 @@
-<a href="{% url 'provider_detail' provider.pk %}" class="text-decoration-none text-reset">
-  <div class="card card-soft provider-card h-100">
-    {% if provider.profile_photo %}
-      <img src="{{ provider.profile_photo.url }}" class="provider-photo" alt="{{ provider.business_name }}">
-    {% else %}
-      <div class="provider-photo placeholder-photo">{{ provider.business_name|slice:":1" }}</div>
-    {% endif %}
-    <div class="card-body">
-      <div class="mb-2">
-        {% if provider.bridal_specialist %}<span class="badge badge-soft">Bridal specialist</span>{% endif %}
-        {% if provider.home_service %}<span class="badge badge-soft">Home service</span>{% endif %}
-      </div>
-      <div class="d-flex justify-content-between align-items-start">
-        <h5 class="mb-1">{{ provider.business_name }}</h5>
-        <span class="small fw-semibold text-nowrap">
-          {% if provider.review_count %}<span class="text-gold">★</span> {{ provider.avg_rating|floatformat:1 }}{% else %}<span class="badge text-bg-light">New</span>{% endif %}
-        </span>
-      </div>
-      <p class="text-muted small mb-3">{{ provider.categories.all|join:", " }}</p>
-      <div class="d-flex justify-content-between small border-top pt-2">
-        <span class="text-muted">{{ provider.area.name|default:"Nagercoil" }}</span>
-        {% if provider.min_price %}<span class="fw-semibold text-brand">₹{{ provider.min_price|floatformat:0 }} onwards</span>{% endif %}
-      </div>
+<div class="card card-soft provider-card h-100 position-relative">
+  {% include "partials/heart.html" %}
+
+  {% if provider.profile_photo %}
+    <img src="{{ provider.profile_photo.url }}" class="provider-photo" alt="">
+  {% else %}
+    <div class="provider-photo placeholder-photo">{{ provider.business_name|slice:":1" }}</div>
+  {% endif %}
+
+  <div class="card-body">
+    <div class="mb-2">
+      {% if provider.bridal_specialist %}<span class="badge badge-soft">Bridal specialist</span>{% endif %}
+      {% if provider.home_service %}<span class="badge badge-soft">Home service</span>{% endif %}
+    </div>
+    <div class="d-flex justify-content-between align-items-start">
+      <h5 class="mb-1">
+        <a href="{% url 'provider_detail' provider.pk %}" class="stretched-link text-decoration-none text-reset">{{ provider.business_name }}</a>
+      </h5>
+      <span class="small fw-semibold text-nowrap">
+        {% if provider.review_count %}<span class="text-gold">★</span> {{ provider.avg_rating|floatformat:1 }}{% else %}<span class="badge text-bg-light">New</span>{% endif %}
+      </span>
+    </div>
+    <p class="text-muted small mb-3">{{ provider.categories.all|join:", " }}</p>
+    <div class="d-flex justify-content-between small border-top pt-2">
+      <span class="text-muted">{{ provider.area.name|default:"Nagercoil" }}</span>
+      {% if provider.min_price %}<span class="fw-semibold text-brand">₹{{ provider.min_price|floatformat:0 }} onwards</span>{% endif %}
     </div>
   </div>
-</a>
+</div>

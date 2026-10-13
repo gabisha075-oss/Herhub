@@ -6,10 +6,12 @@ from urllib.parse import quote
 from django.contrib import messages
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from accounts.decorators import role_required
 from .forms import BookingForm, ReviewForm, PortfolioImageForm, ProviderProfileForm, ServiceForm
-from .models import Area, Booking, Category, Provider, Review, PortfolioImage, Service
+from .models import Area, Booking, Category, Provider, Review, PortfolioImage, Service,Favorite
 
 
 def add_stats(queryset):
@@ -24,7 +26,11 @@ def add_stats(queryset):
             min_price=Min("services__price"),
         )
     )
-
+def get_favorite_ids(user):
+    """Customer favorite panna provider IDs. Matha users-ku empty set."""
+    if user.is_authenticated and user.role == "customer":
+        return set(Favorite.objects.filter(customer=user).values_list("provider_id", flat=True))
+    return set()
 
 def home(request):
     approved = Provider.objects.filter(is_approved=True)
@@ -34,6 +40,7 @@ def home(request):
         "areas": Area.objects.all(),
         "featured": add_stats(approved).order_by(top_rated, "-review_count")[:3],
         "bridal": add_stats(approved.filter(bridal_specialist=True)).order_by(top_rated)[:3],
+        "favorite_ids": get_favorite_ids(request.user),
     }
     return render(request, "services/home.html", context)
 
@@ -92,6 +99,7 @@ def provider_list(request):
         "max_price": max_price,
         "sort": sort,
         "querystring": params.urlencode(),
+        "favorite_ids": get_favorite_ids(request.user),
     }
     return render(request, "services/provider_list.html", context)
 
@@ -116,6 +124,7 @@ def provider_detail(request, pk):
         "reviews": reviews,
         "is_owner": is_owner,
         "wa_text": wa_text,
+        "favorite_ids": get_favorite_ids(request.user),
     })
 
 # ---------------- Customer: booking ----------------
@@ -336,3 +345,33 @@ def edit_profile(request):
     else:
         form = ProviderProfileForm(instance=provider)
     return render(request, "services/edit_profile.html", {"form": form, "provider": provider})
+
+# ---------------- Customer: favorites ----------------
+@role_required("customer")
+@require_POST
+def toggle_favorite(request, pk):
+    provider = get_object_or_404(Provider, pk=pk, is_approved=True)
+    favorite, created = Favorite.objects.get_or_create(
+        customer=request.user, provider=provider
+    )
+    if not created:
+        favorite.delete()
+
+    next_url = request.POST.get("next", "")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = reverse("provider_detail", args=[pk])
+    return redirect(next_url)
+
+
+@role_required("customer")
+def my_favorites(request):
+    saved = Favorite.objects.filter(customer=request.user).values("provider")
+    providers = add_stats(
+        Provider.objects.filter(pk__in=saved, is_approved=True)
+    ).order_by("business_name")
+    return render(request, "services/my_favorites.html", {
+        "providers": providers,
+        "favorite_ids": get_favorite_ids(request.user),
+    })

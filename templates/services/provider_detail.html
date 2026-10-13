@@ -14,7 +14,8 @@
       <div class="avatar-lg placeholder-photo">{{ provider.business_name|slice:":1" }}</div>
     {% endif %}
     <div>
-      <h2 class="fw-bold mb-1">{{ provider.business_name }}</h2>
+      <h2 class="fw-bold mb-1">{{ provider.business_name }}</h2><div class="ms-auto">{% include "partials/heart.html" %}</div>
+      
       <div class="text-muted">{{ provider.categories.all|join:", " }}{% if provider.area %} · {{ provider.area.name }}{% endif %}</div>
       <div class="small mt-1">
         {% if provider.review_count %}

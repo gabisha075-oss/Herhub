@@ -1,0 +1,18 @@
+<div class="heart-wrap">
+  {% if user.is_authenticated %}
+    {% if user.role == 'customer' %}
+      <form method="post" action="{% url 'toggle_favorite' provider.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        {% if provider.pk in favorite_ids %}
+          <button type="submit" class="heart-btn active" aria-label="Remove from favorites" title="Remove from favorites">♥</button>
+        {% else %}
+          <button type="submit" class="heart-btn" aria-label="Save to favorites" title="Save to favorites">♡</button>
+        {% endif %}
+      </form>
+    {% endif %}
+  {% else %}
+    <a class="heart-btn" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}"
+       aria-label="Login to save" title="Login to save">♡</a>
+  {% endif %}
+</div>

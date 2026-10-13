@@ -19,4 +19,6 @@ urlpatterns = [
     path("dashboard/portfolio/", views.my_portfolio, name="my_portfolio"),
     path("dashboard/portfolio/<int:pk>/delete/", views.delete_image, name="image_delete"),
     path("dashboard/profile/", views.edit_profile, name="edit_profile"),
+    path("providers/<int:pk>/favorite/", views.toggle_favorite, name="toggle_favorite"),
+    path("favorites/", views.my_favorites, name="my_favorites"),
 ]

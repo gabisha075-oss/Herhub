@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Favorites · HerHub{% endblock %}
+{% block content %}
+<h2 class="fw-bold">Favorites</h2>
+<p class="text-muted">Providers you've saved.</p>
+
+<div class="row g-4">
+  {% for provider in providers %}
+    <div class="col-md-6 col-lg-4">{% include "partials/provider_card.html" %}</div>
+  {% empty %}
+    <div class="text-center py-5">
+      <h5>No favorites yet</h5>
+      <p class="text-muted">Tap the ♡ on a provider to save them here.</p>
+      <a href="{% url 'provider_list' %}" class="btn btn-brand">Find services</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
