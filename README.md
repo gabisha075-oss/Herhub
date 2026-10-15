@@ -70,7 +70,7 @@ git clone https://github.com/<your-username>/herhub.git
 cd herhub
 python -m venv venv
 venv\Scripts\activate          # Mac/Linux: source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-mysql.txt
 ### Demo data
 
 To explore the site with sample providers, bookings and reviews (local development only):
