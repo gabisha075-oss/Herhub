@@ -71,6 +71,16 @@ cd herhub
 python -m venv venv
 venv\Scripts\activate          # Mac/Linux: source venv/bin/activate
 pip install -r requirements.txt
+### Demo data
+
+To explore the site with sample providers, bookings and reviews (local development only):
+
+```bash
+python manage.py seed_demo
+```
+
+All demo accounts use the password `Demo@12345`: customer `demo_priya`, provider `demo_nila`.
+The command refuses to run when `DEBUG=False` unless `--allow-production` is passed.
 ```
 
 Create the database in MySQL:
